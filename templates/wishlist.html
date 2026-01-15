@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Мои Wishlists</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <h1>Мои Wishlists</h1>
+            <div>
+                <a href="/public" style="color:#3b82f6; text-decoration:none; margin-right:1.5rem;">
+                    Публичные списки
+                </a>
+                <span style="margin-right:1rem; color:#6b7280;">{{ user_email }}</span>
+                <a href="/logout" class="logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 2.5rem;">
+        <!-- Создание нового списка -->
+        <div class="card" style="margin-bottom: 3rem;">
+            <h2 style="margin-top:0;">Создать новый список</h2>
+            <form method="POST" action="/wishlist/create">
+                <input 
+                    type="text" 
+                    name="title" 
+                    placeholder="Например: День рождения 2026, Свадьба, Гейминг" 
+                    required
+                    autofocus
+                >
+                <textarea 
+                    name="description" 
+                    placeholder="Описание списка (необязательно)" 
+                    rows="2"
+                ></textarea>
+                <button type="submit">Создать</button>
+            </form>
+        </div>
+
+        <!-- Существующие списки -->
+        {% if wishlists %}
+        <h2 style="margin-bottom: 1.5rem;">Ваши списки</h2>
+        <div class="grid">
+            {% for wl in wishlists %}
+            <a href="/wishlist/{{ wl.id }}" style="text-decoration:none; color:inherit;">
+                <div class="card">
+                    <h3 style="margin-top:0;">{{ wl.title }}</h3>
+                    
+                    {% if wl.description %}
+                    <p style="color:#4b5563; margin:0.6rem 0;">{{ wl.description | truncate(100) }}</p>
+                    {% endif %}
+                    
+                    <div style="margin-top:1rem; font-size:0.9rem; color:#9ca3af;">
+                        Создан: {{ wl.created_at | truncate(10, True, '') }}
+                        {% if wl.is_shared %}
+                        <span style="color:#10b981; margin-left:0.8rem;">• публичный</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align:center; padding:5rem 1rem; color:#9ca3af;">
+            У вас пока нет списков желаний.<br>
+            Создайте первый выше ↑
+        </div>
+        {% endif %}
+    </main>
+</body>
+</html>

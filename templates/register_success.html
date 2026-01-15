@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Проверьте почту — Wishlist</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-container" style="text-align:center;">
+            <div style="font-size:4.5rem; margin-bottom:1.5rem;">✉️</div>
+            
+            <h1>Проверьте почту</h1>
+            
+            <p style="margin:1.5rem 0 1rem;">
+                Мы отправили письмо с подтверждением на
+            </p>
+            
+            <p style="font-weight:600; font-size:1.2rem; color:#1d4ed8;">
+                {{ email }}
+            </p>
+            
+            <p style="margin:2rem 0; color:#4b5563;">
+                Перейдите по ссылке в письме, чтобы завершить регистрацию.<br>
+                <small>(проверьте также папку «Спам»)</small>
+            </p>
+
+            <div style="margin-top:2rem;">
+                <a href="/login" style="color:#3b82f6; text-decoration:none; font-weight:500;">
+                    Вернуться на страницу входа
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

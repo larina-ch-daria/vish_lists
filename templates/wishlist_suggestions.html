@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Предложения — {{ wishlist_title }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <h1><a href="/wishlist" style="text-decoration:none; color:inherit;">Wishlist</a> → {{ wishlist_title }}</h1>
+            <a href="/logout" class="logout">Выйти</a>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top:2.5rem;">
+        <h2>Предложения от друзей</h2>
+        <p style="color:#4b5563; margin-bottom:2rem;">
+            <a href="/wishlist/{{ wishlist_id }}">← Вернуться к списку</a>
+        </p>
+
+        {% if suggestions %}
+        <div class="grid">
+            {% for s in suggestions %}
+            <div class="card">
+                <h3 style="margin-top:0;">{{ s.title }}</h3>
+                {% if s.url %}<p><a href="{{ s.url }}" target="_blank" style="color:#3b82f6;">Ссылка на товар</a></p>{% endif %}
+                {% if s.price %}<p style="font-weight:600; color:#047857;">{{ s.price }} {{ s.currency }}</p>{% endif %}
+                {% if s.description %}<p style="color:#4b5563;">{{ s.description }}</p>{% endif %}
+                {% if s.comment %}
+                <div style="background:#f3f4f6; padding:1rem; border-radius:8px; margin-top:1rem;">
+                    <strong>Комментарий:</strong> {{ s.comment }}
+                </div>
+                {% endif %}
+                <small style="color:#9ca3af; display:block; margin-top:1rem;">
+                    Предложено {{ s.created_at[:16] | replace("T", " ") }} • Статус: {{ s.status }}
+                </small>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="text-align:center; padding:4rem; color:#9ca3af;">Пока никто ничего не предложил 😔</p>
+        {% endif %}
+    </main>
+</body>
+</html>

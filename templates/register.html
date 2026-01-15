@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Регистрация — Wishlist</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-container">
+            <h1>Регистрация</h1>
+
+            {% if error %}
+            <div class="error">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" action="/register">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="example@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" name="password" required minlength="6">
+                </div>
+
+                <div class="form-group">
+                    <label for="password_confirm">Повторите пароль</label>
+                    <input type="password" id="password_confirm" name="password_confirm" required minlength="6">
+                </div>
+
+                <button type="submit">Создать аккаунт</button>
+            </form>
+
+            <div class="link">
+                Уже есть аккаунт? <a href="/login">Войти</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
