@@ -167,15 +167,33 @@ button:hover {
   color: #1e40af;
 }
 
+.calendar-day {
+    padding: 0.9rem 0;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    position: relative;
+    background: #f8fafc; /* светлый фон */
+}
+
 .calendar-day.today {
-  background: #1e40af;
-  color: white;
+    background: #1e40af; /* синий */
+    color: white;
+    font-weight: bold;
 }
 
 .calendar-day.has-events {
-  background: rgba(191, 219, 254, 0.4);
-  font-weight: 600;
+    background: rgba(191, 219, 254, 0.4);
+    font-weight: 600;
 }
+
+.calendar-day.empty {
+    background: transparent;
+    cursor: default;
+    color: #d1d5db;
+}
+
 
 .event-dots {
   position: absolute;
@@ -192,4 +210,29 @@ button:hover {
   border-radius: 50%;
   background: #93c5fd; /* бледно-синий */
   box-shadow: 0 2px 6px rgba(147, 197, 253, 0.4);
+}
+
+.corner-plant {
+  position: fixed;
+  bottom: -60px;
+  right: 0px;
+
+  width: clamp(140px, 18vw, 260px);
+  height: clamp(140px, 18vw, 260px);
+
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: bottom right;
+
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+
+
+#calendarDays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    text-align: center;
 }

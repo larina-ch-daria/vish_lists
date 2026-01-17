@@ -1,57 +1,51 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Добавить праздник</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    <div class="container" style="max-width: 620px; margin: 6rem auto 2rem;">
-        <div class="card">
-            <h1 style="margin-bottom: 0.5rem;">Добавить праздник</h1>
-            <p style="color: #4b5563; margin-bottom: 2rem;">
-                Заполните детали, чтобы отметить дату и прикрепить вишлисты
-            </p>
+{% extends "base.html" %}
 
-            <form method="POST" action="/calendar/add">
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Название праздника</label>
-                    <input type="text" name="title" placeholder="Например: День рождения мамы" required autofocus>
-                </div>
+{% block title %}Добавить праздник{% endblock %}
 
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Дата</label>
-                    <input type="date" name="date_str" 
-                           value="{{ request.query_params.get('date') or '' }}" 
-                           required>
-                </div>
+{% block content %}
+<div class="container" style="max-width: 620px; margin: 6rem auto 2rem;">
+    <div class="card">
+        <h1 style="margin-bottom: 0.5rem;">Добавить праздник</h1>
+        <p style="color: #4b5563; margin-bottom: 2rem;">
+            Заполните детали, чтобы отметить дату и прикрепить вишлисты
+        </p>
 
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Описание / заметки</label>
-                    <textarea name="description" placeholder="Например: Что подарить, где отмечать..." rows="3"></textarea>
-                </div>
+        <form method="POST" action="/calendar/add">
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Название праздника</label>
+                <input type="text" name="title" placeholder="Например: День рождения мамы" required autofocus>
+            </div>
 
-                <div style="margin-bottom: 2rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Прикрепить вишлисты:</label>
-                    {% for wl in wishlists %}
-                    <label style="display: block; margin: 0.4rem 0;">
-                        <input type="checkbox" name="wishlist_ids" value="{{ wl.id }}">
-                        {{ wl.title }}
-                    </label>
-                    {% endfor %}
-                </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Дата</label>
+                <input type="date" name="date_str" 
+                       value="{{ request.query_params.get('date') or '' }}" 
+                       required>
+            </div>
 
-                <button type="submit" style="width: 100%; padding: 0.9rem; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer;">
-                    Сохранить праздник
-                </button>
-            </form>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Описание / заметки</label>
+                <textarea name="description" placeholder="Например: Что подарить, где отмечать..." rows="3"></textarea>
+            </div>
 
-            <p style="margin-top: 2.5rem; text-align: center; color: #6b7280;">
-                <a href="/calendar" style="color: #3b82f6; text-decoration: none;">← Назад к календарю</a>
-            </p>
-        </div>
+            <div style="margin-bottom: 2rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Прикрепить вишлисты:</label>
+                {% for wl in wishlists %}
+                <label style="display: block; margin: 0.4rem 0;">
+                    <input type="checkbox" name="wishlist_ids" value="{{ wl.id }}">
+                    {{ wl.title }}
+                </label>
+                {% endfor %}
+            </div>
+
+            <button type="submit" style="width: 100%; padding: 0.9rem; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer;">
+                Сохранить праздник
+            </button>
+        </form>
+
+        <p style="margin-top: 2.5rem; text-align: center; color: #6b7280;">
+            <a href="/calendar" style="color: #3b82f6; text-decoration: none;">← Назад к календарю</a>
+        </p>
     </div>
-    
-</body>
-</html>
+</div>
+{% endblock %}

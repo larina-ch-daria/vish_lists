@@ -1,55 +1,46 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Публичные Wishlists</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    <header>
-        <div class="container header-content">
-            <h1>Публичные списки желаний</h1>
-            <div>
-                <a href="/wishlist" style="color:#3b82f6; text-decoration:none; margin-right:1.5rem;">
-                    Мои списки
-                </a>
-                <a href="/logout" class="logout">Выйти</a>
-            </div>
-        </div>
-    </header>
+{% extends "base.html" %}
 
-    <main class="container" style="padding-top:2.5rem;">
-        {% if wishlists %}
-        <div style="margin-bottom:2rem; color:#4b5563;">
-            Здесь собраны все списки, которые пользователи решили сделать публичными
-        </div>
+{% block title %}Публичные Wishlists{% endblock %}
 
-        <div class="grid">
-            {% for wl in wishlists %}
-            <a href="/wishlist/{{ wl.id }}" style="text-decoration:none; color:inherit;">
-                <div class="card">
-                    <h3 style="margin-top:0;">{{ wl.title }}</h3>
-                    
-                    {% if wl.description %}
-                    <p style="color:#4b5563; margin:0.8rem 0;">{{ wl.description | truncate(120) }}</p>
-                    {% endif %}
-                    
-                    <div style="margin-top:1rem; font-size:0.9rem; color:#9ca3af;">
-                        Создан: {{ wl.created_at | truncate(10, True, '') }}
-                    </div>
+{% block content %}
+<div class="container header-content" style="margin-bottom:2rem;">
+    <h1>Публичные списки желаний</h1>
+    <div>
+        <a href="/wishlist" style="color:#3b82f6; text-decoration:none; margin-right:1.5rem;">Мои списки</a>
+        <a href="/logout" class="logout">Выйти</a>
+    </div>
+</div>
+
+<main class="container" style="padding-top:1rem;">
+    {% if wishlists %}
+    <div style="margin-bottom:2rem; color:#4b5563;">
+        Здесь собраны все списки, которые пользователи решили сделать публичными
+    </div>
+
+    <div class="grid">
+        {% for wl in wishlists %}
+        <a href="/wishlist/{{ wl.id }}" style="text-decoration:none; color:inherit;">
+            <div class="card">
+                <h3 style="margin-top:0;">{{ wl.title }}</h3>
+
+                {% if wl.description %}
+                <p style="color:#4b5563; margin:0.8rem 0;">{{ wl.description | truncate(120) }}</p>
+                {% endif %}
+
+                <div style="margin-top:1rem; font-size:0.9rem; color:#9ca3af;">
+                    Создан: {{ wl.created_at | truncate(10, True, '') }}
                 </div>
-            </a>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div style="text-align:center; padding:6rem 1rem; color:#9ca3af; font-size:1.1rem;">
-            Пока нет публичных списков...<br>
-            <small style="margin-top:1rem; display:block;">
-                Сделайте свой список публичным — и он появится здесь!
-            </small>
-        </div>
-        {% endif %}
-    </main>
-</body>
-</html>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center; padding:6rem 1rem; color:#9ca3af; font-size:1.1rem;">
+        Пока нет публичных списков...<br>
+        <small style="margin-top:1rem; display:block;">
+            Сделайте свой список публичным — и он появится здесь!
+        </small>
+    </div>
+    {% endif %}
+</main>
+{% endblock %}

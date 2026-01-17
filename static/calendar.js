@@ -22,7 +22,7 @@ function renderCalendar() {
     // Названия дней недели
     ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].forEach(day => {
         const div = document.createElement('div');
-        div.className = 'calendar-day-name';
+        div.className = 'day-name';
         div.textContent = day;
         calendarDays.appendChild(div);
     });

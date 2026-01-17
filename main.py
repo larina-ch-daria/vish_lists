@@ -7,6 +7,11 @@ from supabase import create_client, Client
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 from dotenv import load_dotenv
+from fastapi.staticfiles import StaticFiles
+
+app = FastAPI(title="Wishlist App")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 load_dotenv()
 
@@ -18,9 +23,6 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-app = FastAPI(title="Wishlist App")
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
 
 
 def get_current_user(request: Request):
@@ -39,7 +41,7 @@ async def root(request: Request):
     user = get_current_user(request)
     if not user:
         return RedirectResponse("/login")
-    return RedirectResponse("/calendar")
+    return RedirectResponse("/wishlist")
 
 
 # ── Аутентификация ───────────────────────────────────────────────────────
@@ -54,7 +56,7 @@ async def login(request: Request, email: str = Form(...), password: str = Form(.
         res = supabase.auth.sign_in_with_password({"email": email, "password": password})
         if not res.session:
             raise Exception("Не удалось войти")
-        response = RedirectResponse("/calendar", status_code=303)
+        response = RedirectResponse("/wishlist", status_code=303)
         response.set_cookie(
             key="access_token",
             value=res.session.access_token,

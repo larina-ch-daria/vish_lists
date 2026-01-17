@@ -1,82 +1,72 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>{{ wishlist_title }} — Предложения</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    <header>
-        <div class="container header-content">
-            <h1>
-                <a href="/wishlist" style="text-decoration:none; color:inherit;">Wishlist</a> 
-                → {{ wishlist_title }} → Предложения
-            </h1>
-            <div>
-                <a href="/wishlist/{{ wishlist_id }}" style="color:#3b82f6; text-decoration:none; margin-right:1.5rem;">
-                    ← К списку
-                </a>
-                <a href="/logout" class="logout">Выйти</a>
+{% extends "base.html" %}
+
+{% block title %}{{ wishlist_title }} — Предложения{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2.5rem;">
+    <h1>
+        <a href="/wishlist" style="text-decoration:none; color:inherit;">Wishlist</a> 
+        → {{ wishlist_title }} → Предложения
+    </h1>
+    <div style="margin-bottom:2rem;">
+        <a href="/wishlist/{{ wishlist_id }}" style="color:#3b82f6; text-decoration:none;">
+            ← К списку
+        </a>
+    </div>
+
+    <h2>Предложения от друзей</h2>
+
+    {% if suggestions %}
+    <div class="grid">
+        {% for s in suggestions %}
+        <div class="card suggestion-card 
+            {% if s.status == 'accepted' %}accepted{% elif s.status == 'rejected' %}rejected{% endif %}">
+            <h3 style="margin-top:0;">{{ s.title }}</h3>
+
+            {% if s.url %}
+            <p><a href="{{ s.url }}" target="_blank" style="color:#3b82f6;">Ссылка на товар</a></p>
+            {% endif %}
+
+            {% if s.price %}
+            <p style="font-weight:600; color:#047857;">{{ s.price }} {{ s.currency }}</p>
+            {% endif %}
+
+            {% if s.description %}
+            <p style="color:#4b5563;">{{ s.description }}</p>
+            {% endif %}
+
+            {% if s.comment %}
+            <div style="margin-top:1rem; padding:0.8rem; background:#f3f4f6; border-radius:6px;">
+                <strong>Комментарий:</strong><br>{{ s.comment }}
             </div>
-        </div>
-    </header>
+            {% endif %}
 
-    <main class="container" style="padding-top:2.5rem;">
-        <h2>Предложения от друзей</h2>
-
-        {% if suggestions %}
-        <div class="grid">
-            {% for s in suggestions %}
-            <div class="card suggestion-card 
-                {% if s.status == 'accepted' %}accepted{% elif s.status == 'rejected' %}rejected{% endif %}">
-                <h3 style="margin-top:0;">{{ s.title }}</h3>
-
-                {% if s.url %}
-                <p><a href="{{ s.url }}" target="_blank" style="color:#3b82f6;">Ссылка на товар</a></p>
-                {% endif %}
-
-                {% if s.price %}
-                <p style="font-weight:600; color:#047857;">{{ s.price }} {{ s.currency }}</p>
-                {% endif %}
-
-                {% if s.description %}
-                <p style="color:#4b5563;">{{ s.description }}</p>
-                {% endif %}
-
-                {% if s.comment %}
-                <div style="margin-top:1rem; padding:0.8rem; background:#f3f4f6; border-radius:6px;">
-                    <strong>Комментарий:</strong><br>{{ s.comment }}
-                </div>
-                {% endif %}
-
-                <div style="margin-top:1.5rem; font-size:0.9rem; color:#6b7280;">
-                    Предложено: {{ s.created_at[:16] | replace("T", " ") }}
-                    • Статус: <strong>{{ s.status }}</strong>
-                </div>
-
-                {% if s.status == 'pending' %}
-                <div style="margin-top:1.5rem; display:flex; gap:1rem;">
-                    <form action="/wishlist/{{ wishlist_id }}/suggestions/{{ s.id }}/accept" method="POST">
-                        <button type="submit" style="background:#10b981; color:white;">
-                            Принять (добавить в список)
-                        </button>
-                    </form>
-                    <form action="/wishlist/{{ wishlist_id }}/suggestions/{{ s.id }}/reject" method="POST">
-                        <button type="submit" style="background:#ef4444; color:white;">
-                            Отклонить
-                        </button>
-                    </form>
-                </div>
-                {% endif %}
+            <div style="margin-top:1.5rem; font-size:0.9rem; color:#6b7280;">
+                Предложено: {{ s.created_at[:16] | replace("T", " ") }}
+                • Статус: <strong>{{ s.status }}</strong>
             </div>
-            {% endfor %}
+
+            {% if s.status == 'pending' %}
+            <div style="margin-top:1.5rem; display:flex; gap:1rem;">
+                <form action="/wishlist/{{ wishlist_id }}/suggestions/{{ s.id }}/accept" method="POST">
+                    <button type="submit" style="background:#10b981; color:white; padding:0.6rem; border:none; border-radius:6px; cursor:pointer;">
+                        Принять (добавить в список)
+                    </button>
+                </form>
+                <form action="/wishlist/{{ wishlist_id }}/suggestions/{{ s.id }}/reject" method="POST">
+                    <button type="submit" style="background:#ef4444; color:white; padding:0.6rem; border:none; border-radius:6px; cursor:pointer;">
+                        Отклонить
+                    </button>
+                </form>
+            </div>
+            {% endif %}
         </div>
-        {% else %}
-        <div style="text-align:center; padding:6rem 1rem; color:#9ca3af;">
-            Пока нет предложений...
-        </div>
-        {% endif %}
-    </main>
-</body>
-</html>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center; padding:6rem 1rem; color:#9ca3af;">
+        Пока нет предложений...
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

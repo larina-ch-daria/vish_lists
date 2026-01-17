@@ -1,286 +1,175 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Мои Wishlists</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <style>
-        .main-layout {
-            display: flex;
-            gap: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
-        .content {
-            flex: 3;
-        }
-        .sidebar {
-            flex: 1;
-            min-width: 340px;
-            background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            height: fit-content;
-            position: sticky;
-            top: 100px;
-        }
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.2rem;
-        }
-        .calendar-header h3 {
-            margin: 0;
-            font-size: 1.3rem;
-        }
-        .calendar-header button {
-            background: none;
-            border: none;
-            font-size: 1.6rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            color: #4b5563;
-        }
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-            text-align: center;
-        }
-        .day-name {
-            font-weight: 600;
-            color: #6b7280;
-            padding: 0.6rem 0;
-            font-size: 0.9rem;
-        }
-        .calendar-day {
-            padding: 0.9rem 0;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.95rem;
-            position: relative;
-        }
-        .calendar-day:hover {
-            background: #eff6ff;
-            color: #1d4ed8;
-        }
-        .calendar-day.today {
-            background: #3b82f6;
-            color: rgb(0, 0, 0);
-            font-weight: bold;
-        }
-        .calendar-day.has-events {
-            background: #fef3c7;
-            font-weight: 600;
-        }
-        .event-dots {
-            position: absolute;
-            bottom: 6px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 4px;
-        }
-        .event-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-        .calendar-day.empty {
-            background: transparent;
-            cursor: default;
-            color: #d1d5db;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="container header-content">
-            <h1>Мои Wishlists</h1>
-            <div>
-                <a href="/public" style="color:#3b82f6; margin-right:1.2rem;">Публичные списки</a>
-                <a href="/calendar" style="color:#3b82f6; margin-right:1.2rem;">Полный календарь</a>
-                <a href="/logout" class="logout">Выйти</a>
-            </div>
+{% extends "base.html" %}
+
+{% block title %}Мои Wishlists{% endblock %}
+
+{% block content %}
+<div class="main-layout">
+    <!-- Левая часть: создание и список вишлистов -->
+    <div class="content">
+        <div class="card" style="margin-bottom: 3rem;">
+            <h2 style="margin-top:0;">Создать новый список</h2>
+            <form method="POST" action="/wishlist/create" style="display:flex; flex-direction:column; gap:0.8rem;">
+                <input 
+                    type="text" 
+                    name="title" 
+                    placeholder="Например: День рождения 2026" 
+                    required 
+                    autofocus
+                    style="padding:0.6rem; border:1px solid #d1d5db; border-radius:6px;"
+                >
+                <textarea 
+                    name="description" 
+                    placeholder="Описание (необязательно)" 
+                    rows="2"
+                    style="padding:0.6rem; border:1px solid #d1d5db; border-radius:6px;"
+                ></textarea>
+                <button type="submit" style="padding:0.7rem; background:#3b82f6; color:white; border:none; border-radius:6px; cursor:pointer;">Создать список</button>
+            </form>
         </div>
-    </header>
 
-    <div class="main-layout">
-        <!-- Левая часть: создание и список вишлистов -->
-        <div class="content">
-            <div class="card" style="margin-bottom: 3rem;">
-                <h2 style="margin-top:0;">Создать новый список</h2>
-                <form method="POST" action="/wishlist/create">
-                    <input 
-                        type="text" 
-                        name="title" 
-                        placeholder="Например: День рождения 2026" 
-                        required 
-                        autofocus
-                    >
-                    <textarea 
-                        name="description" 
-                        placeholder="Описание (необязательно)" 
-                        rows="2"
-                    ></textarea>
-                    <button type="submit">Создать список</button>
-                </form>
-            </div>
-
-            {% if wishlists %}
-            <h2 style="margin-bottom:1.5rem;">Ваши списки</h2>
-            <div class="grid">
-                {% for wl in wishlists %}
-                <a href="/wishlist/{{ wl.id }}" style="text-decoration:none; color:inherit;">
-                    <div class="card">
-                        <h3 style="margin-top:0;">{{ wl.title }}</h3>
-                        {% if wl.description %}
-                        <p style="color:#4b5563; margin:0.6rem 0;">{{ wl.description | truncate(100) }}</p>
+        {% if wishlists %}
+        <h2 style="margin-bottom:1.5rem;">Ваши списки</h2>
+        <div class="grid">
+            {% for wl in wishlists %}
+            <a href="/wishlist/{{ wl.id }}" style="text-decoration:none; color:inherit;">
+                <div class="card">
+                    <h3 style="margin-top:0;">{{ wl.title }}</h3>
+                    {% if wl.description %}
+                    <p style="color:#4b5563; margin:0.6rem 0;">{{ wl.description | truncate(100) }}</p>
+                    {% endif %}
+                    <div style="margin-top:1rem; font-size:0.9rem; color:#9ca3af;">
+                        Создан: {{ wl.created_at | truncate(10, True, '') }}
+                        {% if wl.is_shared %}
+                        <span style="color:#10b981; margin-left:0.8rem;">• публичный</span>
                         {% endif %}
-                        <div style="margin-top:1rem; font-size:0.9rem; color:#9ca3af;">
-                            Создан: {{ wl.created_at | truncate(10, True, '') }}
-                            {% if wl.is_shared %}
-                            <span style="color:#10b981; margin-left:0.8rem;">• публичный</span>
-                            {% endif %}
-                        </div>
                     </div>
-                </a>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div style="text-align:center; padding:4rem 0; color:#9ca3af;">
-                У вас пока нет списков желаний<br>
-                Создайте первый выше ↑
-            </div>
-            {% endif %}
+                </div>
+            </a>
+            {% endfor %}
         </div>
-
-        <!-- Правая часть: календарь -->
-        <aside class="sidebar">
-            <div class="calendar-header">
-                <button onclick="prevMonth()">←</button>
-                <h3 id="monthYear">Январь 2026</h3>
-                <button onclick="nextMonth()">→</button>
-            </div>
-
-            <div class="calendar-grid" id="calendarDays"></div>
-        </aside>
+        {% else %}
+        <div style="text-align:center; padding:4rem 0; color:#9ca3af;">
+            У вас пока нет списков желаний<br>
+            Создайте первый выше ↑
+        </div>
+        {% endif %}
     </div>
 
-    <script>
-        let currentDate = new Date(); // текущая дата
-        const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
-                            "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-        const colors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899", "#14b8a6"];
+    <!-- Правая часть: календарь -->
+    <aside class="sidebar">
+        <div class="calendar-header">
+            <button onclick="prevMonth()">←</button>
+            <h3 id="monthYear">Январь 2026</h3>
+            <button onclick="nextMonth()">→</button>
+        </div>
 
-        function renderCalendar() {
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
+        <div class="calendar-grid" id="calendarDays"></div>
+    </aside>
+</div>
 
-            document.getElementById("monthYear").textContent = monthNames[month] + " " + year;
+<script>
+    let currentDate = new Date(); // текущая дата
+    const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+                        "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+    const colors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899", "#14b8a6"];
 
-            const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            const daysInMonth = lastDay.getDate();
-            const startingDayOfWeek = firstDay.getDay() || 7;
+    function renderCalendar() {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
 
-            const calendarDays = document.getElementById("calendarDays");
-            calendarDays.innerHTML = '';
+        document.getElementById("monthYear").textContent = monthNames[month] + " " + year;
 
-            // Названия дней недели
-            ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].forEach(day => {
-                const div = document.createElement('div');
-                div.className = 'calendar-day-name';
-                div.textContent = day;
-                calendarDays.appendChild(div);
-            });
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const daysInMonth = lastDay.getDate();
+        const startingDayOfWeek = firstDay.getDay() || 7;
 
-            // Пустые дни
-            for (let i = 1; i < startingDayOfWeek; i++) {
-                const div = document.createElement('div');
-                div.className = 'calendar-day empty';
-                calendarDays.appendChild(div);
-            }
+        const calendarDays = document.getElementById("calendarDays");
+        calendarDays.innerHTML = '';
 
-            // Дни месяца
-            for (let day = 1; day <= daysInMonth; day++) {
-                const div = document.createElement('div');
-                div.className = 'calendar-day';
-                div.textContent = day;
+        // Названия дней недели
+        ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].forEach(day => {
+            const div = document.createElement('div');
+            div.className = 'calendar-day-name';
+            div.textContent = day;
+            calendarDays.appendChild(div);
+        });
 
-                // Сегодняшний день
-                const today = new Date();
-                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-                    div.classList.add('today');
-                }
-
-                // Клик по дню → форма добавления
-                div.onclick = function() {
-                    const selectedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    window.location.href = `/calendar/add?date=${selectedDate}`;
-                };
-
-                calendarDays.appendChild(div);
-            }
-
-            // Подгрузка реальных событий и цветных точек
-            loadEvents(year, month + 1);
+        // Пустые дни
+        for (let i = 1; i < startingDayOfWeek; i++) {
+            const div = document.createElement('div');
+            div.className = 'calendar-day empty';
+            calendarDays.appendChild(div);
         }
 
-        async function loadEvents(year, month) {
-            try {
-                const response = await fetch(`/calendar/events/${year}/${month}`);
-                const events = await response.json(); // { "15": 3, "25": 1 } — день → кол-во вишлистов
+        // Дни месяца
+        for (let day = 1; day <= daysInMonth; day++) {
+            const div = document.createElement('div');
+            div.className = 'calendar-day';
+            div.textContent = day;
 
-                document.querySelectorAll('.calendar-day').forEach(day => {
-                    const dayNum = day.textContent.trim();
-                    if (events[dayNum]) {
-                        day.classList.add('has-events');
+            const today = new Date();
+            if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                div.classList.add('today');
+            }
 
-                        const dotsContainer = document.createElement('div');
-                        dotsContainer.className = 'event-dots';
+            div.onclick = function() {
+                const selectedDate = `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                window.location.href = `/calendar/add?date=${selectedDate}`;
+            };
 
-                        const count = events[dayNum];
-                        for (let i = 0; i < Math.min(count, colors.length); i++) {
-                            const dot = document.createElement('span');
-                            dot.className = 'event-dot';
-                            dot.style.backgroundColor = colors[i];
-                            dotsContainer.appendChild(dot);
-                        }
+            calendarDays.appendChild(div);
+        }
 
-                        if (count > colors.length) {
-                            const more = document.createElement('span');
-                            more.textContent = `+${count - colors.length}`;
-                            more.style.fontSize = '0.7rem';
-                            more.style.color = '#ef4444';
-                            dotsContainer.appendChild(more);
-                        }
+        loadEvents(year, month + 1);
+    }
 
-                        day.appendChild(dotsContainer);
+    async function loadEvents(year, month) {
+        try {
+            const response = await fetch(`/calendar/events/${year}/${month}`);
+            const events = await response.json();
+
+            document.querySelectorAll('.calendar-day').forEach(day => {
+                const dayNum = day.textContent.trim();
+                if (events[dayNum]) {
+                    day.classList.add('has-events');
+                    const dotsContainer = document.createElement('div');
+                    dotsContainer.className = 'event-dots';
+
+                    const count = events[dayNum];
+                    for (let i = 0; i < Math.min(count, colors.length); i++) {
+                        const dot = document.createElement('span');
+                        dot.className = 'event-dot';
+                        dot.style.backgroundColor = colors[i];
+                        dotsContainer.appendChild(dot);
                     }
-                });
-            } catch (error) {
-                console.error("Ошибка загрузки событий:", error);
-            }
-        }
 
-        function prevMonth() {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            renderCalendar();
-        }
+                    if (count > colors.length) {
+                        const more = document.createElement('span');
+                        more.textContent = `+${count - colors.length}`;
+                        more.style.fontSize = '0.7rem';
+                        more.style.color = '#ef4444';
+                        dotsContainer.appendChild(more);
+                    }
 
-        function nextMonth() {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            renderCalendar();
+                    day.appendChild(dotsContainer);
+                }
+            });
+        } catch (error) {
+            console.error("Ошибка загрузки событий:", error);
         }
+    }
 
-        // Запуск
+    function prevMonth() {
+        currentDate.setMonth(currentDate.getMonth() - 1);
         renderCalendar();
-    </script>
-</body>
-</html>
+    }
+
+    function nextMonth() {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar();
+    }
+
+    renderCalendar();
+</script>
+{% endblock %}
