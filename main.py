@@ -565,6 +565,7 @@ async def accept_suggestion(request: Request, wishlist_id: str, suggestion_id: s
     if not user:
         raise HTTPException(401)
 
+    # Проверяем, что это список владельца
     wl = supabase.table("wishlists")\
         .select("user_id")\
         .eq("id", wishlist_id)\
@@ -574,6 +575,7 @@ async def accept_suggestion(request: Request, wishlist_id: str, suggestion_id: s
     if not wl.data or str(wl.data["user_id"]) != str(user.id):
         raise HTTPException(403, "Это не ваш список")
 
+    # Получаем само предложение
     sug = supabase.table("wishlist_suggestions")\
         .select("*")\
         .eq("id", suggestion_id)\
@@ -586,16 +588,20 @@ async def accept_suggestion(request: Request, wishlist_id: str, suggestion_id: s
 
     suggestion = sug.data
 
+    # Вот здесь: создаём новую запись в wishlist_items
+    # и обязательно сохраняем, кто предложил (suggested_by)
     supabase.table("wishlist_items").insert({
         "wishlist_id": wishlist_id,
         "title": suggestion["title"],
-        "description": suggestion["description"],
-        "url": suggestion["url"],
-        "price": suggestion["price"],
-        "currency": suggestion["currency"],
-        "priority": 3
+        "description": suggestion.get("description"),
+        "url": suggestion.get("url"),
+        "price": suggestion.get("price"),
+        "currency": suggestion.get("currency", "€"),
+        "priority": 3,  # можно сделать динамическим
+        "suggested_by": suggestion["suggested_by"]  # ← кто предложил
     }).execute()
 
+    # Меняем статус предложения на accepted
     supabase.table("wishlist_suggestions")\
         .update({"status": "accepted"})\
         .eq("id", suggestion_id)\
@@ -603,6 +609,30 @@ async def accept_suggestion(request: Request, wishlist_id: str, suggestion_id: s
 
     return RedirectResponse(f"/wishlist/{wishlist_id}/suggestions", status_code=303)
 
+@app.post("/wishlist/{wishlist_id}/delete")
+async def delete_wishlist(request: Request, wishlist_id: str):
+    user = get_current_user(request)
+    if not user:
+        raise HTTPException(401, "Необходима авторизация")
+
+    # Проверяем, что список принадлежит пользователю
+    wl = supabase.table("wishlists")\
+        .select("user_id")\
+        .eq("id", wishlist_id)\
+        .eq("user_id", user.id)\
+        .single()\
+        .execute()
+
+    if not wl.data:
+        raise HTTPException(403, "Это не ваш список или список не найден")
+
+    # Удаляем список (каскадно удалятся все связанные записи: items, suggestions, holiday_wishlists и т.д.)
+    supabase.table("wishlists")\
+        .delete()\
+        .eq("id", wishlist_id)\
+        .execute()
+
+    return RedirectResponse("/wishlist", status_code=303)
 
 @app.post("/wishlist/{wishlist_id}/suggestions/{suggestion_id}/reject")
 async def reject_suggestion(request: Request, wishlist_id: str, suggestion_id: str):

@@ -14,9 +14,9 @@
                 → {{ wishlist.title }}
             </h1>
             <div>
-                <a href="/public" style="color:#3b82f6; margin-right:1.5rem;">Публичные списки</a>
+                <a href="/public">Публичные списки</a>
                 {% if is_owner %}
-                    <span style="margin-right:1rem; color:#6b7280;">{{ current_user_email }}</span>
+                    <span style="margin:0 1rem; color:#6b7280;">{{ current_user_email }}</span>
                     <a href="/logout" class="logout">Выйти</a>
                 {% endif %}
             </div>
@@ -24,71 +24,68 @@
     </header>
 
     <main class="container" style="padding-top:2.5rem; padding-bottom:4rem;">
-        <!-- Заголовок + кнопка шаринга -->
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
-            <h2 style="margin:0;">{{ wishlist.title }}</h2>
+        <!-- Заголовок + публичность и шаринг -->
+        <div class="header-with-actions">
+            <h2>{{ wishlist.title }}</h2>
 
             {% if is_owner %}
-            <form action="/wishlist/{{ wishlist.id }}/toggle-share" method="POST">
-                <button 
-                    type="submit"
-                    class="share-btn {% if wishlist.is_shared %}shared{% endif %}"
-                >
-                    {% if wishlist.is_shared %}
-                        Отключить публичный доступ
-                    {% else %}
-                        Сделать публичным
-                    {% endif %}
-                </button>
-            </form>
+            <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                <form action="/wishlist/{{ wishlist.id }}/toggle-share" method="POST">
+                    <button type="submit" class="share-btn {% if wishlist.is_shared %}shared{% endif %}">
+                        {% if wishlist.is_shared %}
+                            Отключить публичный доступ
+                        {% else %}
+                            Сделать публичным
+                        {% endif %}
+                    </button>
+                </form>
+
+                <!-- Кнопка удаления списка -->
+                <form action="/wishlist/{{ wishlist.id }}/delete" method="POST"
+                      onsubmit="return confirm('Вы уверены, что хотите удалить список «{{ wishlist.title }}»? Это действие нельзя отменить.');">
+                    <button type="submit" class="delete-btn">
+                        Удалить список
+                    </button>
+                </form>
+            </div>
             {% endif %}
         </div>
 
-        <!-- Публичная информация -->
         {% if wishlist.is_shared %}
-        <div style="margin-bottom:2rem; padding:1rem; background:#f0fdf4; border-radius:8px; font-size:0.95rem;">
-            Этот список публичный — любой может посмотреть по ссылке:<br>
-            <code style="background:#e5e7eb; padding:0.3rem 0.6rem; border-radius:4px; font-family:monospace;">
-                {{ request.url_root }}wishlist/{{ wishlist.id }}
-            </code>
+        <div class="public-notice">
+            Список публичный — ссылка: 
+            <code>{{ request.url_root }}wishlist/{{ wishlist.id }}</code>
         </div>
         {% endif %}
 
         {% if wishlist.description %}
-        <p style="color:#4b5563; margin-bottom:2.5rem; line-height:1.6;">{{ wishlist.description }}</p>
+        <p class="description">{{ wishlist.description }}</p>
         {% endif %}
 
-        <!-- Предложение предмета (для гостей) -->
+        <!-- Предложение от гостей -->
         {% if not is_owner %}
-        <div class="card" style="margin: 3rem 0; background: #f0f9ff; border-color: #3b82f6;">
-            <h3 style="color: #1e40af; margin-top:0;">Хотите предложить что-то в этот список?</h3>
-            <p style="color: #1e3a8a; margin-bottom: 1.5rem;">
-                Владелец увидит ваше предложение и может добавить его в свой вишлист!
-            </p>
-            <a href="/wishlist/{{ wishlist.id }}/suggest"
-               style="display: inline-block; padding: 0.9rem 2rem; background: #3b82f6; color: white; border-radius: 8px; text-decoration: none; font-weight: 500;">
+        <div class="suggest-card">
+            <h3>Хотите предложить желание?</h3>
+            <a href="/wishlist/{{ wishlist.id }}/suggest" class="suggest-btn">
                 Предложить предмет
             </a>
         </div>
         {% endif %}
 
-        <!-- Добавление желания + просмотр предложений + поделиться (только владелец) -->
+        <!-- Добавление желания + кнопки владельца -->
         {% if is_owner %}
-        <div class="card" style="margin-bottom: 3.5rem;">
-            <h3 style="margin-top:0;">Добавить своё желание</h3>
+        <div class="card add-wish-card">
+            <h3>Добавить желание</h3>
             <form method="POST" action="/wishlist/{{ wishlist.id }}/add-item">
                 <input type="text" name="title" placeholder="Что хотите?" required autofocus>
-                <input type="url" name="url" placeholder="Ссылка на товар (опционально)">
-                
-                <div style="display:flex; gap:1rem; flex-wrap:wrap;">
-                    <input type="number" name="price" placeholder="Цена" step="0.01" style="flex:1; max-width:160px;">
-                    <input type="text" name="currency" value="€" style="width:70px;">
+                <input type="url" name="url" placeholder="Ссылка (опционально)">
+                <div class="price-row">
+                    <input type="number" name="price" placeholder="Цена" step="0.01">
+                    <input type="text" name="currency" value="€" class="currency-input">
                 </div>
-                
-                <textarea name="description" placeholder="Описание, важные детали..." rows="3"></textarea>
-                
-                <div style="margin:1.2rem 0;">
-                    <label style="font-weight:500; margin-right:0.8rem;">Приоритет:</label>
+                <textarea name="description" placeholder="Описание..." rows="3"></textarea>
+                <div class="priority-row">
+                    <label>Приоритет:</label>
                     <select name="priority">
                         <option value="5">★★★★★ Очень хочу</option>
                         <option value="4">★★★★ Хочу</option>
@@ -97,87 +94,75 @@
                         <option value="1">★ Идея</option>
                     </select>
                 </div>
-                
-                <button type="submit">Добавить в список</button>
+                <button type="submit">Добавить</button>
             </form>
         </div>
 
-        <!-- Кнопки для владельца -->
-        <div style="text-align:center; margin:2rem 0;">
-            <a href="/share-via-telegram" 
-                style="padding:0.9rem 2rem; background:#1e40af; color:white; border-radius:12px; text-decoration:none; font-weight:500;">
+        <!-- Кнопки владельца -->
+        <div class="owner-actions">
+            <a href="/wishlist/{{ wishlist.id }}/suggestions" class="action-btn suggestions-btn">
+                Посмотреть предложения
+            </a>
+            <a href="/share-via-telegram" class="action-btn telegram-btn">
                 Поделиться через Telegram
             </a>
         </div>
         {% endif %}
 
         <!-- Список желаний -->
-        <h3 style="margin: 3rem 0 1.5rem;">Желания в списке</h3>
+        <h3 class="section-title">Желания в списке</h3>
 
         {% if items %}
         <div class="grid">
             {% for item in items %}
-            <div class="card">
-                <h3 style="margin-top:0; font-size:1.25rem;">{{ item.title }}</h3>
-                
+            <div class="card {% if item.suggested_by %}suggested-item{% endif %}">
+                <h3>{{ item.title }}</h3>
+
                 {% if item.url %}
-                <p style="margin:0.5rem 0;">
-                    <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer" 
-                       style="color:#3b82f6; font-weight:500;">
-                        → Ссылка на товар
-                    </a>
-                </p>
+                <a href="{{ item.url }}" target="_blank" class="item-link">Ссылка на товар</a>
                 {% endif %}
-                
+
                 {% if item.price %}
-                <p style="font-size:1.2rem; font-weight:600; color:#047857; margin:0.7rem 0;">
-                    {{ item.price }} {{ item.currency }}
-                </p>
+                <p class="price">{{ item.price }} {{ item.currency }}</p>
                 {% endif %}
-                
+
                 {% if item.description %}
-                <p style="color:#4b5563; margin:0.8rem 0; line-height:1.5;">{{ item.description }}</p>
+                <p class="description">{{ item.description }}</p>
                 {% endif %}
-                
-                <div style="margin-top:1.2rem; color:#6b7280; font-size:0.9rem;">
+
+                <div class="meta">
                     Приоритет: {{ "★" * item.priority }}
-                    {% if item.bought %} • <span style="color:#10b981;">Куплено</span>{% endif %}
                 </div>
+
+                {% if item.suggested_by %}
+                <div class="suggested-badge">
+                    Предложено пользователем
+                </div>
+                {% endif %}
 
                 <!-- Бронирование -->
                 {% if item.reserved_by %}
-                <div style="margin-top:0.8rem; padding:0.6rem; background:#fefce8; border-radius:6px; font-size:0.9rem;">
+                <div class="reserved-notice">
                     Забронировано {% if item.reserved_by == current_user_id %}вами{% else %}кем-то{% endif %}
-                    {% if is_owner %}
-                        <br><small>Пользователь: {{ item.reserved_by }}</small>
-                    {% endif %}
                 </div>
 
                 {% if item.reserved_by == current_user_id or is_owner %}
-                <div style="margin-top:0.8rem;">
-                    <form action="/wishlist/{{ wishlist.id }}/item/{{ item.id }}/unreserve" method="POST">
-                        <button type="submit" style="background:#ef4444; color:white; padding:0.5rem 1rem; font-size:0.9rem;">
-                            Отменить бронь
-                        </button>
-                    </form>
-                </div>
+                <form action="/wishlist/{{ wishlist.id }}/item/{{ item.id }}/unreserve" method="POST">
+                    <button type="submit" class="unreserve-btn">Отменить бронь</button>
+                </form>
                 {% endif %}
                 {% else %}
                 {% if not is_owner %}
-                <div style="margin-top:1.2rem;">
-                    <form action="/wishlist/{{ wishlist.id }}/item/{{ item.id }}/reserve" method="POST">
-                        <button type="submit" style="background:#eab308; color:white; padding:0.6rem 1.2rem;">
-                            Забронировать подарок
-                        </button>
-                    </form>
-                </div>
+                <form action="/wishlist/{{ wishlist.id }}/item/{{ item.id }}/reserve" method="POST">
+                    <button type="submit" class="reserve-btn">Забронировать</button>
+                </form>
                 {% endif %}
                 {% endif %}
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <div style="text-align:center; padding:5rem 1rem; color:#9ca3af; font-style:italic; background:#f9fafb; border-radius:12px;">
+        <div class="empty-list">
             В этом списке пока нет желаний
             {% if is_owner %} — добавьте первое выше ↑{% endif %}
         </div>

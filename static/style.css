@@ -1,4 +1,4 @@
-/* Современный, бледно-синий, минималистичный и приятный дизайн */
+/* Современный, бледно-синий, минималистичный и очень приятный дизайн */
 
 * {
   margin: 0;
@@ -8,7 +8,7 @@
 
 body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f0f7ff; /* очень светлый бледно-синий фон */
+  background: #f8fbff;           /* очень светлый бледно-синий, почти белый */
   color: #1e293b;
   line-height: 1.6;
   min-height: 100vh;
@@ -25,12 +25,6 @@ body {
   display: flex;
   gap: 2.5rem;
   padding: 3rem 0;
-  animation: fadeIn 0.8s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Контент */
@@ -39,30 +33,28 @@ body {
   max-width: 960px;
 }
 
-/* Боковая панель (календарь) — лёгкая и воздушная */
+/* Боковая панель — календарь */
 .sidebar {
   width: 360px;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.75);
-  border-radius: 24px;
+  background: white;
+  border-radius: 20px;
   padding: 2rem;
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(191, 219, 254, 0.4);
-  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+  border: 1px solid #e0eaff;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.05);
   height: fit-content;
   position: sticky;
   top: 120px;
 }
 
-/* Хедер — чистый и строгий */
+/* Хедер */
 header {
-  background: rgba(255, 255, 255, 0.8);
-  border-bottom: 1px solid rgba(191, 219, 254, 0.4);
+  background: white;
+  border-bottom: 1px solid #e0eaff;
   padding: 1.25rem 0;
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(16px);
 }
 
 .header-content {
@@ -90,30 +82,29 @@ nav a:hover {
   color: #1e40af;
 }
 
-/* Карточки — лёгкие, с бледно-синим акцентом */
+/* Карточки */
 .card {
   background: white;
-  border-radius: 20px;
+  border-radius: 16px;
   padding: 2rem;
-  border: 1px solid rgba(191, 219, 254, 0.5);
+  border: 1px solid #e0eaff;
   transition: all 0.3s ease;
-  backdrop-filter: blur(4px);
 }
 
 .card:hover {
   transform: translateY(-6px);
-  border-color: #93c5fd;
+  border-color: #bfdbfe;
   box-shadow: 0 16px 40px rgba(59, 130, 246, 0.08);
 }
 
-/* Формы — современные и приятные */
+/* Формы */
 input, textarea, select {
   width: 100%;
   padding: 1rem 1.25rem;
   border: 1px solid #bfdbfe;
   border-radius: 12px;
   font-size: 1rem;
-  background: #f0f7ff;
+  background: #f8fbff;
   transition: all 0.25s;
   margin-bottom: 1.5rem;
 }
@@ -121,7 +112,7 @@ input, textarea, select {
 input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
   background: white;
 }
 
@@ -135,23 +126,23 @@ button {
   font-size: 1.05rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15);
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.12);
 }
 
 button:hover {
   background: #1e3a8a;
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(30, 64, 175, 0.25);
+  box-shadow: 0 12px 24px rgba(30, 64, 175, 0.2);
 }
 
-/* Сетка списков */
+/* Сетка */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   gap: 2rem;
 }
 
-/* Календарь — строгий, но с бледно-синими акцентами */
+/* Календарь */
 .calendar-header h3 {
   font-size: 1.5rem;
   font-weight: 700;
@@ -163,7 +154,7 @@ button:hover {
 }
 
 .calendar-day:hover {
-  background: rgba(191, 219, 254, 0.3);
+  background: #e0eaff;
   color: #1e40af;
 }
 
@@ -173,7 +164,7 @@ button:hover {
 }
 
 .calendar-day.has-events {
-  background: rgba(191, 219, 254, 0.4);
+  background: #e0eaff;
   font-weight: 600;
 }
 
@@ -190,6 +181,192 @@ button:hover {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #93c5fd; /* бледно-синий */
-  box-shadow: 0 2px 6px rgba(147, 197, 253, 0.4);
+  background: #93c5fd;
+}
+
+/* Подсветка предложенных предметов */
+.suggested-item {
+  background: #f3e8ff;
+  border-left: 4px solid #c084fc;
+  transition: background 0.3s ease;
+}
+
+.suggested-item:hover {
+  background: #ede9fe;
+}
+
+.suggested-badge {
+  margin-top: 0.8rem;
+  padding: 0.4rem 0.8rem;
+  background: #e9d5ff;
+  color: #6b21a8;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+/* Дополнительные стили */
+.section-title {
+  margin: 3rem 0 1.5rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.item-link {
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+.price {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #047857;
+  margin: 0.5rem 0;
+}
+
+.description {
+  color: #4b5563;
+  margin: 0.8rem 0;
+}
+
+.meta {
+  margin-top: 0.8rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.reserved-notice {
+  margin: 0.8rem 0;
+  padding: 0.6rem;
+  background: #fefce8;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #854d0e;
+}
+
+.reserve-btn, .unreserve-btn {
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.reserve-btn {
+  background: #eab308;
+  color: white;
+}
+
+.unreserve-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.owner-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 2.5rem 0;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 0.9rem 2rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 500;
+  color: white;
+}
+
+.suggestions-btn {
+  background: #8b5cf6;
+}
+
+.telegram-btn {
+  background: #1e40af;
+}
+
+.suggest-card {
+  margin: 3rem 0;
+  padding: 2rem;
+  background: #f0f9ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+}
+
+.suggest-btn {
+  display: inline-block;
+  padding: 0.9rem 2rem;
+  background: #3b82f6;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.empty-list {
+  text-align: center;
+  padding: 5rem 1rem;
+  color: #9ca3af;
+  font-style: italic;
+  background: #f9fafb;
+  border-radius: 12px;
+}
+
+.header-with-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.public-notice {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f0fdf4;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.suggested-item {
+    background: #f3e8ff !important;   /* светло-фиолетовый фон */
+    border-left: 4px solid #c084fc;   /* фиолетовая полоска слева */
+    transition: background 0.3s ease;
+}
+
+.suggested-item:hover {
+    background: #ede9fe !important;   /* чуть ярче при наведении */
+}
+
+.suggested-badge {
+    margin-top: 0.8rem;
+    padding: 0.4rem 0.8rem;
+    background: #e9d5ff;
+    color: #6b21a8;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+/* Кнопка удаления списка */
+.delete-btn {
+    padding: 0.9rem 2rem;
+    background: #ef4444;          /* красный цвет для опасности */
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.delete-btn:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(239, 68, 68, 0.3);
 }
