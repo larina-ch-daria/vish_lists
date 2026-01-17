@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Поделиться через Telegram</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container" style="max-width: 600px; margin: 4rem auto;">
+        <div class="card">
+            <h1>Поделиться вишлистом в Telegram</h1>
+
+            <p style="margin:1.5rem 0; color:#4b5563;">
+                После нажатия кнопки откроется Telegram с готовым сообщением. Просто отправь его получателю.
+            </p>
+
+            <form method="POST" action="/share-via-telegram">
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Выберите вишлист:</label>
+                    <select name="wishlist_id" required style="width:100%; padding:0.8rem; border:1px solid #d1d5db; border-radius:8px;">
+                        {% for wl in wishlists %}
+                        <option value="{{ wl.id }}">{{ wl.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem; font-weight:500;">Ник получателя в Telegram:</label>
+                    <input type="text" name="telegram_username" placeholder="@username или просто username" required style="width:100%; padding:0.8rem; border:1px solid #d1d5db; border-radius:8px;">
+                </div>
+
+                <button type="submit" style="width:100%; padding:1rem; background:#1e40af; color:white; border:none; border-radius:12px; font-weight:600; cursor:pointer;">
+                    Открыть Telegram и отправить
+                </button>
+            </form>
+
+            <p style="margin-top:2rem; text-align:center; color:#6b7280;">
+                <a href="/wishlist" style="color:#3b82f6; text-decoration:none;">← Назад к спискам</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

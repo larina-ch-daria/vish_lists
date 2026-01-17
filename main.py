@@ -8,10 +8,12 @@ from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 if not SUPABASE_URL or not SUPABASE_ANON_KEY:
     raise ValueError("SUPABASE_URL и SUPABASE_ANON_KEY должны быть в .env")
@@ -39,7 +41,7 @@ async def root(request: Request):
     user = get_current_user(request)
     if not user:
         return RedirectResponse("/login")
-    return RedirectResponse("/calendar")
+    return RedirectResponse("/wishlist")
 
 
 # ── Аутентификация ───────────────────────────────────────────────────────
@@ -54,13 +56,13 @@ async def login(request: Request, email: str = Form(...), password: str = Form(.
         res = supabase.auth.sign_in_with_password({"email": email, "password": password})
         if not res.session:
             raise Exception("Не удалось войти")
-        response = RedirectResponse("/calendar", status_code=303)
+        response = RedirectResponse("/wishlist", status_code=303)
         response.set_cookie(
             key="access_token",
             value=res.session.access_token,
             httponly=True,
             max_age=res.session.expires_in,
-            secure=False,  # В продакшене → True
+            secure=False,
             samesite="lax"
         )
         return response
@@ -145,7 +147,6 @@ async def calendar_view(request: Request, month: int = None, year: int = None):
     start_date = date(target_year, target_month, 1)
     end_date = start_date + relativedelta(months=1) - relativedelta(days=1)
 
-    # Шаг 1: Получаем все праздники пользователя за месяц
     holidays_res = supabase.table("holidays")\
         .select("id, title, date, description")\
         .eq("user_id", user.id)\
@@ -154,7 +155,6 @@ async def calendar_view(request: Request, month: int = None, year: int = None):
         .order("date")\
         .execute()
 
-    # Шаг 2: Для каждого праздника отдельно получаем связанные вишлисты
     calendar_data = {}
     for h in holidays_res.data or []:
         d = h["date"]
@@ -179,7 +179,7 @@ async def calendar_view(request: Request, month: int = None, year: int = None):
     })
 
 
-# ── API для событий календаря (для JS) ────────────────────────────────────
+# ── API для календаря (цветные точки) ─────────────────────────────────────
 @app.get("/calendar/events/{year}/{month}")
 async def get_calendar_events(year: int, month: int, request: Request):
     user = get_current_user(request)
@@ -239,7 +239,6 @@ async def add_holiday(
     except:
         raise HTTPException(400, "Неверный формат даты (YYYY-MM-DD)")
 
-    # Создаём праздник
     holiday_res = supabase.table("holidays").insert({
         "user_id": user.id,
         "title": title.strip(),
@@ -250,14 +249,13 @@ async def add_holiday(
     holiday_id = holiday_res.data[0]["id"]
 
     if wishlist_ids:
-        # Проверяем, что все id реально принадлежат пользователю
-        valid_wishlists = supabase.table("wishlists")\
+        valid_res = supabase.table("wishlists")\
             .select("id")\
             .eq("user_id", user.id)\
             .in_("id", wishlist_ids)\
             .execute()
 
-        valid_ids = {w["id"] for w in valid_wishlists.data or []}
+        valid_ids = {w["id"] for w in valid_res.data or []}
 
         for wid in wishlist_ids:
             if wid in valid_ids:
@@ -266,9 +264,79 @@ async def add_holiday(
                     "wishlist_id": wid
                 }).execute()
             else:
-                print(f"Пропущен несуществующий/чужой wishlist_id: {wid}")
+                print(f"Пропущен недействительный wishlist_id: {wid}")
 
     return RedirectResponse("/calendar", status_code=303)
+
+
+# ── Поделиться вишлистом через Telegram ──────────────────────────────────
+@app.get("/share-via-telegram", response_class=HTMLResponse)
+async def share_via_telegram_form(request: Request):
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse("/login")
+
+    wishlists = supabase.table("wishlists")\
+        .select("id, title")\
+        .eq("user_id", user.id)\
+        .execute()
+
+    return templates.TemplateResponse("share_telegram_simple.html", {
+        "request": request,
+        "wishlists": wishlists.data or []
+    })
+
+
+@app.post("/share-via-telegram")
+async def generate_telegram_link(
+    request: Request,
+    wishlist_id: str = Form(...),
+    telegram_username: str = Form(...)
+):
+    user = get_current_user(request)
+    if not user:
+        raise HTTPException(401)
+
+    # Проверяем вишлист
+    wl = supabase.table("wishlists")\
+        .select("id, title, is_shared")\
+        .eq("id", wishlist_id)\
+        .eq("user_id", user.id)\
+        .single()\
+        .execute()
+
+    if not wl.data:
+        raise HTTPException(404, "Вишлист не найден или не ваш")
+
+    wishlist = wl.data
+
+    # Делаем публичным
+    if not wishlist["is_shared"]:
+        supabase.table("wishlists")\
+            .update({"is_shared": True})\
+            .eq("id", wishlist_id)\
+            .execute()
+
+    # Формируем ссылку на вишлист
+    base_url = str(request.base_url).rstrip('/')
+    wishlist_link = f"{base_url}/wishlist/{wishlist_id}"
+
+    # Текст сообщения
+    message = (
+        f"Привет! 🎁\n\n"
+        f"Вот мой вишлист: «{wishlist['title']}»\n"
+        f"Ссылка: {wishlist_link}\n\n"
+        f"Можешь выбрать, что подарить 😊"
+    )
+
+    # Экранируем для URL
+    import urllib.parse
+    encoded_message = urllib.parse.quote(message)
+
+    # Прямая ссылка на Telegram
+    telegram_link = f"https://t.me/{telegram_username.strip().lstrip('@')}?text={encoded_message}"
+
+    return RedirectResponse(telegram_link, status_code=303)
 
 
 # ── Мои списки ───────────────────────────────────────────────────────────

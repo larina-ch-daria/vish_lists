@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Отправлено!</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container" style="max-width: 600px; margin: 6rem auto; text-align:center;">
+        <div class="card" style="padding:3rem;">
+            <h1 style="color:#10b981; margin-bottom:1rem;">Готово! 🎉</h1>
+            <p style="font-size:1.2rem; margin:1.5rem 0;">
+                Ссылка на вишлист «{{ wishlist_title }}» успешно отправлена в Telegram пользователю 
+                <strong>@{{ username }}</strong>
+            </p>
+            <p style="color:#64748b; margin-bottom:2rem;">
+                Теперь он(а) сможет посмотреть ваш список и выбрать подарок 😊
+            </p>
+
+            <a href="/wishlist" style="display:inline-block; padding:1rem 2rem; background:#3b82f6; color:white; border-radius:12px; text-decoration:none; font-weight:500;">
+                Вернуться к спискам
+            </a>
+        </div>
+    </div>
+</body>
+</html>
