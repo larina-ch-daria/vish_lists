@@ -5,66 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>{% block title %}Wishlist{% endblock %}</title>
     <link rel="stylesheet" href="/static/style.css">
-    <style>
-        body { display: flex; min-height: 100vh; margin: 0; font-family: system-ui, sans-serif; }
-        header { background: white; border-bottom: 1px solid #e5e7eb; padding: 1rem 0; position: sticky; top: 0; z-index: 100; }
-        .container { flex: 1; padding: 1.5rem; }
-        aside { width: 320px; background: #f9fafb; border-left: 1px solid #e5e7eb; padding: 1.5rem; overflow-y: auto; }
-        .calendar-event { margin: 1rem 0; padding: 0.8rem; background: #f0f9ff; border-radius: 8px; }
-        .calendar-event h4 { margin: 0 0 0.5rem; color: #1e40af; }
-        .calendar-event a { color: #3b82f6; text-decoration: none; }
-        .calendar-event a:hover { text-decoration: underline; }
-    </style>
 </head>
 <body>
     <header>
-        <div class="container header-content" style="max-width: 1400px; margin: 0 auto;">
-            <h1 style="margin:0;">
-                <a href="/wishlist" style="text-decoration:none; color:inherit;">Wishlist</a>
-            </h1>
+        <div class="container header-content">
+            <h1><a href="/wishlist" style="text-decoration:none; color:inherit;">Wishlist</a></h1>
             <div>
-                <a href="/calendar" style="color:#3b82f6; margin-right:1.5rem;">Календарь</a>
+                <a href="/public" style="color:#3b82f6; margin-right:1rem;">Публичные списки</a>
+                <a href="/calendar" style="color:#3b82f6; margin-right:1rem;">Календарь</a>
                 <a href="/logout" class="logout">Выйти</a>
             </div>
         </div>
     </header>
 
-    <div style="display:flex; flex:1;">
-        <!-- Основной контент -->
-        <main class="container" style="max-width: 1000px;">
-            {% block content %}{% endblock %}
-        </main>
-
-        <!-- Боковая панель с календарем (всегда справа) -->
-        <aside>
-            <h3 style="margin-top:0;">Ближайшие праздники</h3>
-            {% if upcoming_holidays %}
-            {% for h in upcoming_holidays %}
-            <div class="calendar-event">
-                <h4>{{ h.date }} — {{ h.title }}</h4>
-                {% if h.description %}<p style="color:#4b5563; margin:0.5rem 0;">{{ h.description }}</p>{% endif %}
-                {% if h.holiday_wishlists %}
-                <div style="margin-top:0.5rem;">
-                    Вишлисты:
-                    <ul style="margin:0.3rem 0; padding-left:1.2rem;">
-                        {% for hw in h.holiday_wishlists %}
-                        <li><a href="/wishlist/{{ hw.wishlists.id }}">{{ hw.wishlists.title }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-            </div>
-            {% endfor %}
-            {% else %}
-            <p style="color:#9ca3af;">Пока нет предстоящих праздников</p>
-            {% endif %}
-
-            <div style="margin-top:2rem;">
-                <a href="/calendar" style="color:#3b82f6; text-decoration:none;">
-                    → Полный календарь
-                </a>
-            </div>
-        </aside>
-    </div>
+    <main class="container" style="padding-top:2rem;">
+        {% block content %}{% endblock %}
+    </main>
 </body>
 </html>
